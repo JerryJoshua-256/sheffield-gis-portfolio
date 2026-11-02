@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="GIS case study: Sheffield Security Planning Project — crime mapping, CCTV service-area analysis and spatial prioritisation using QGIS.">
+<title>Sheffield Security Planning | GIS Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070a12;--panel:#0d1422;--panel2:#111c2d;--line:rgba(172,198,231,.16);--text:#edf4ff;--muted:#9aabc4;--cyan:#7ee7f5;--blue:#7aa7ff;--gold:#f4ca79;--max:1180px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif;line-height:1.65}a{color:inherit;text-decoration:none}button{font:inherit}
+#starfield{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
+.hero{min-height:650px;height:82vh;max-height:860px;position:relative;overflow:hidden;background:linear-gradient(145deg,#101e32 0%,#0a1220 52%,#070a12 100%)}
+.nav{position:absolute;z-index:3;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;max-width:var(--max);margin:auto;padding:26px 26px}.brand{font:500 12px 'DM Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:#d8e9ff}.navlinks{display:flex;gap:25px;font-size:12px;color:#c1cde0}.navlinks a:hover{color:var(--cyan)}
+.hero-copy{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);width:min(900px,90%);text-align:center}.eyebrow{font:12px 'DM Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan)}h1{font-size:clamp(42px,7vw,88px);line-height:1.02;letter-spacing:-.065em;margin:20px 0 22px;font-weight:800}.hero-copy p{max-width:670px;margin:0 auto;color:#c0cde0;font-size:clamp(14px,1.7vw,18px)}.hero-meta{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:30px}.pill{border:1px solid var(--line);background:rgba(10,20,34,.48);padding:8px 13px;border-radius:99px;font:11px 'DM Mono',monospace;color:#d4e5f9;backdrop-filter:blur(8px)}.scrollhint{position:absolute;z-index:3;bottom:30px;left:50%;transform:translateX(-50%);font:10px 'DM Mono',monospace;letter-spacing:.2em;color:#9aabc4}
+main{position:relative;z-index:1}.wrap{width:min(var(--max),calc(100% - 48px));margin:auto}.section{padding:100px 0;border-top:1px solid var(--line)}.section-head{display:grid;grid-template-columns:180px 1fr;gap:35px;margin-bottom:42px}.section-no{font:11px 'DM Mono',monospace;color:var(--cyan);letter-spacing:.15em;padding-top:10px}.section h2{font-size:clamp(29px,4vw,48px);line-height:1.12;letter-spacing:-.045em;margin:0 0 15px}.lead{color:var(--muted);max-width:760px;margin:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.stat,.panel{background:linear-gradient(145deg,rgba(17,28,45,.92),rgba(10,17,29,.92));border:1px solid var(--line);border-radius:17px;padding:23px}.stat strong{display:block;font-size:37px;letter-spacing:-.06em;color:var(--text)}.stat span{display:block;font:10px 'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:8px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel h3{font-size:18px;margin:0 0 12px}.panel p,.panel li{color:var(--muted);font-size:14px}.panel ul{padding-left:18px;margin:12px 0 0}.tag{font:10px 'DM Mono',monospace;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase}.data-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}.data-item{border-bottom:1px solid var(--line);padding:13px 0;color:#c5d3e7;font-size:13px}.data-item b{display:block;color:var(--text);font-size:14px;margin-bottom:3px}
+.workflow{counter-reset:step;display:grid;grid-template-columns:1fr 1fr;gap:12px}.step{counter-increment:step;position:relative;padding:20px 20px 20px 64px;border:1px solid var(--line);border-radius:14px;background:rgba(13,20,34,.72)}.step:before{content:counter(step,decimal-leading-zero);position:absolute;left:19px;top:20px;color:var(--cyan);font:12px 'DM Mono',monospace}.step h3{font-size:15px;margin:0 0 7px}.step p{font-size:13px;color:var(--muted);margin:0}.code{white-space:pre-wrap;overflow-wrap:anywhere;background:#050910;border:1px solid var(--line);border-radius:12px;padding:20px;color:#c5f2f5;font:12px/1.8 'DM Mono',monospace;overflow-x:auto}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}table{border-collapse:collapse;width:100%;min-width:650px;background:rgba(13,20,34,.65);font-size:13px}th,td{text-align:left;padding:13px 15px;border-bottom:1px solid var(--line)}th{font:10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);background:#101a2a}td{color:#c8d5e8}tr:last-child td{border-bottom:0}
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:16px}.figure{border:1px solid var(--line);background:#0b1220;border-radius:15px;overflow:hidden}.figure img{width:100%;height:auto;display:block}.figure figcaption{padding:12px 15px;color:var(--muted);font:10px 'DM Mono',monospace;letter-spacing:.04em}
+.note{border-left:2px solid var(--gold);padding:15px 18px;background:rgba(244,202,121,.06);color:#d9d1bd;font-size:13px;border-radius:0 10px 10px 0;margin:20px 0}.recommend{border:1px solid rgba(126,231,245,.3);background:linear-gradient(135deg,rgba(24,60,75,.34),rgba(12,23,38,.7));border-radius:18px;padding:27px}.recommend strong{color:var(--cyan)}
+footer{padding:45px 0 60px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(max-width:760px){.navlinks{display:none}.hero{min-height:670px}.section{padding:70px 0}.section-head{grid-template-columns:1fr;gap:8px}.grid{grid-template-columns:repeat(2,1fr)}.two,.workflow,.gallery,.data-list{grid-template-columns:1fr}.wrap{width:min(100% - 32px,var(--max))}.stat strong{font-size:30px}}
+@media(max-width:430px){.grid{grid-template-columns:1fr 1fr}.stat{padding:16px}.stat strong{font-size:26px}}
+</style>
+</head>
+<body>
+<header class="hero" id="top">
+<nav class="nav"><a class="brand" href="#top">GIS / Spatial Planning</a><div class="navlinks"><a href="#overview">Overview</a><a href="#method">Methodology</a><a href="#results">Results</a><a href="#workflow">Workflow</a></div></nav>
+<div class="hero-copy">
+<div class="eyebrow">Urban Security · Spatial Analysis · QGIS</div>
+<h1>Sheffield<br>Security Planning</h1>
+<p>A GIS-based evaluation of crime patterns, existing CCTV service areas and two proposed surveillance schemes across Sheffield, United Kingdom.</p>
+<div class="hero-meta"><span class="pill">QGIS</span><span class="pill">Crime Mapping</span><span class="pill">Buffer Analysis</span><span class="pill">Spatial Prioritisation</span></div>
+</div><div class="scrollhint">SCROLL TO EXPLORE ↓</div>
+</header>
+<main>
+<section class="section" id="overview"><div class="wrap">
+<div class="section-head"><div class="section-no">01 / OVERVIEW</div><div><h2>A spatial approach to urban security.</h2><p class="lead">The project evaluated how proposed CCTV schemes could improve surveillance coverage in Sheffield, with particular attention to areas experiencing higher reported crime and to conservation areas. The work was undertaken during a SIWES programme, using QGIS to guide a Sheffield University Urban Studies and Planning student through the project.</p></div></div>
+<div class="grid">
+<div class="stat"><strong>343</strong><span>Sheffield LSOAs · 2021</span></div><div class="stat"><strong>41</strong><span>LSOAs with ≥30 crimes</span></div><div class="stat"><strong>8</strong><span>Very-high-priority LSOAs</span></div>
+<div class="stat"><strong>2 km</strong><span>Existing CCTV buffer range</span></div><div class="stat"><strong>10</strong><span>Proposed cameras / upgrades</span></div><div class="stat"><strong>2 plans</strong><span>Alternative A and Alternative B</span></div>
+</div>
+</div></section>
+
+<section class="section"><div class="wrap"><div class="section-head"><div class="section-no">02 / BRIEF</div><div><h2>The planning question</h2><p class="lead">The client brief focused on evaluating surveillance schemes under a limited budget, comparing the overall coverage of service areas and the distribution of cameras in relation to high-crime LSOAs.</p></div></div>
+<div class="two">
+<div class="panel"><span class="tag">Plan A</span><h3>Install 10 new CCTV cameras</h3><p>Each proposed camera has a 2 km range. The stated rationale is to maximise coverage in risky areas with no current camera presence.</p></div>
+<div class="panel"><span class="tag">Plan B</span><h3>Upgrade 10 existing cameras</h3><p>Upgrade selected existing cameras to advanced models, increasing their monitoring range from 2 km to 3 km. The stated rationale is to enhance coverage in high-crime-density areas.</p></div>
+</div></div></section>
+
+<section class="section"><div class="wrap"><div class="section-head"><div class="section-no">03 / DATA</div><div><h2>Inputs supplied for the analysis</h2><p class="lead">The project brief identifies the following datasets. The original data package is not included in this portfolio bundle.</p></div></div>
+<div class="data-list">
+<div class="data-item"><b>Sheffield LSOAs, 2021</b>343 polygon features used as the spatial unit of analysis.</div>
+<div class="data-item"><b>Sheffield boundary shapefile</b>Geographic boundary framework for the study.</div>
+<div class="data-item"><b>Crime incident point data</b>Incidents recorded 1–30 September 2023, with locations and crime-type attributes.</div>
+<div class="data-item"><b>Sheffield_Crime_Count_All.csv</b>Crime counts listed by LSOA code.</div>
+<div class="data-item"><b>Conservation area polygons</b>Designated conservation areas in Sheffield.</div>
+<div class="data-item"><b>Existing CCTV locations</b>Current camera locations sourced from Sheffield City Council Open Dataset.</div>
+<div class="data-item"><b>Plan A proposed installations</b>Shapefile for 10 new cameras with a 2 km range.</div>
+<div class="data-item"><b>Plan B proposed upgrades</b>Shapefile for 10 existing cameras with a 3 km range.</div>
+</div></div></section>
+
+<section class="section" id="method"><div class="wrap"><div class="section-head"><div class="section-no">04 / METHOD</div><div><h2>From incident points to priority areas</h2><p class="lead">The documented analysis combines attribute selection, location-based selection, buffer analysis, intersection, field calculations and attribute joins.</p></div></div>
+<div class="workflow">
+<div class="step"><h3>Aggregate crime by LSOA</h3><p>Use Select by Location to count crime points within each LSOA and create a crime-count layer. The methodology section also describes aggregation using Join Attributes by Location.</p></div>
+<div class="step"><h3>Map crime incidents</h3><p>Generate a choropleth map of total crime incidents by LSOA for September 2023.</p></div>
+<div class="step"><h3>Select high-incident LSOAs</h3><p>Use the ≥30 monthly incident threshold. The report identifies 41 such LSOAs, representing at least one recorded crime per day during the 30-day period.</p></div>
+<div class="step"><h3>Buffer existing CCTV</h3><p>Create a 2 km buffer around each existing CCTV point and dissolve the buffers into one coverage geometry.</p></div>
+<div class="step"><h3>Identify CCTV service areas</h3><p>Intersect the CCTV coverage geometry with LSOA polygons to identify the portions of LSOAs reached by the buffers.</p></div>
+<div class="step"><h3>Calculate coverage measures</h3><p>Calculate Area_Ha, Covered_Ha and %covered for each intersected LSOA portion.</p></div>
+<div class="step"><h3>Restore the full LSOA layer</h3><p>Join the intersected layer back to the original LSOA layer using the unique lsoa21cd field, retaining LSOAs not touched by a buffer.</p></div>
+<div class="step"><h3>Classify priority</h3><p>Apply the documented expression using monthly crime count and percentage of existing CCTV coverage to classify five priority levels.</p></div>
+<div class="step"><h3>Assess Plan A</h3><p>Assess coverage from the 10 proposed new cameras, each with a 2 km range, against the priority categories.</p></div>
+<div class="step"><h3>Assess Plan B</h3><p>Generate a 3 km buffer for the 10 proposed camera upgrades and assess coverage against the same priority categories.</p></div>
+<div class="step"><h3>Compare the alternatives</h3><p>Compare coverage by priority class and overall coverage, and consider the spatial distribution of proposed cameras.</p></div>
+<div class="step"><h3>Consider conservation areas</h3><p>Review the locations of proposed and existing cameras in relation to conservation area polygons.</p></div>
+</div>
+</div></section>
+
+<section class="section"><div class="wrap"><div class="section-head"><div class="section-no">05 / EXPRESSION</div><div><h2>Priority classification logic</h2><p class="lead">The following is the expression reproduced from the project report.</p></div></div>
+<pre class="code">CASE
+WHEN "Crime_Coun" >= 30 AND "% Covered" = 0
+THEN 'VERY HIGH'
+WHEN "Crime_Coun" >= 30 AND "% Covered" > 0 AND "% Covered" <=50
+THEN 'HIGH'
+WHEN "Crime_Coun" >= 30 AND "% Covered" > 50
+THEN 'MEDIUM'
+WHEN "Crime_Coun" <30 AND "% Covered" = 0
+THEN 'LOW'
+WHEN "Crime_Coun" < 30 AND "% Covered" > 0
+THEN 'LEAST'
+END</pre>
+<div class="note">The report's category logic is retained as written. The expression assumes the field names shown in the report are present in the working layer.</div>
+</div></section>
+
+<section class="section" id="results"><div class="wrap"><div class="section-head"><div class="section-no">06 / RESULTS</div><div><h2>Priority profile of Sheffield</h2><p class="lead">The report's priority statistics are reproduced below without recalculation.</p></div></div>
+<div class="table-wrap"><table><thead><tr><th>Priority category</th><th>LSOA count</th><th>Area (Ha)</th><th>Share of total area</th></tr></thead><tbody>
+<tr><td>Very High Priority</td><td>8</td><td>449.9969</td><td>1.22%</td></tr>
+<tr><td>High Priority</td><td>1</td><td>148.464</td><td>0.40%</td></tr>
+<tr><td>Medium Priority</td><td>32</td><td>2,449.95</td><td>6.65%</td></tr>
+<tr><td>Low Priority</td><td>108</td><td>12,262.2</td><td>33.29%</td></tr>
+<tr><td>Least Priority</td><td>194</td><td>21,519.8</td><td>58.43%</td></tr>
+<tr><td><b>Total</b></td><td><b>343</b></td><td><b>36,830.4</b></td><td><b>100.00%</b></td></tr>
+</tbody></table></div>
+</div></section>
+
+<section class="section"><div class="wrap"><div class="section-head"><div class="section-no">07 / COMPARISON</div><div><h2>Plan A versus Plan B</h2><p class="lead">Coverage percentages are shown exactly as reported in the comparison table.</p></div></div>
+<div class="table-wrap"><table><thead><tr><th>LSOA priority category</th><th>Plan A coverage</th><th>Plan B coverage</th><th>Better-performing plan</th></tr></thead><tbody>
+<tr><td>Very High Priority</td><td>88.26%</td><td>5.79%</td><td>Plan A</td></tr>
+<tr><td>High Priority</td><td>0.00%</td><td>95.25%</td><td>Plan B</td></tr>
+<tr><td>Medium Priority</td><td>36.92%</td><td>99.59%</td><td>Plan B</td></tr>
+<tr><td>Low Priority</td><td>20.01%</td><td>4.99%</td><td>Plan A</td></tr>
+<tr><td>Least Priority</td><td>20.78%</td><td>34.51%</td><td>Plan B</td></tr>
+<tr><td><b>Overall coverage*</b></td><td><b>20.96%</b></td><td><b>28.91%</b></td><td><b>Plan B</b></td></tr>
+</tbody></table></div>
+<div class="two" style="margin-top:16px">
+<div class="panel"><span class="tag">Plan A · reported table</span><h3>8,226.69 ha · 22.34%</h3><p>The Plan A coverage table reports this total, while the interpretation and comparison sections report 7,719.41 ha and 20.96%.</p></div>
+<div class="panel"><span class="tag">Plan B</span><h3>10,646.851 ha · 28.90778%</h3><p>The Plan B table reports 10,646.851 hectares, equivalent to approximately 28.91% of the total area.</p></div>
+</div>
+<div class="note">Source discrepancy retained: the Plan A table and the later interpretation/comparison sections give different overall totals. No figure has been silently substituted.</div>
+</div></section>
+
+<section class="section"><div class="wrap"><div class="section-head"><div class="section-no">08 / DECISION</div><div><h2>Why the report selected Plan A</h2><p class="lead">Although Plan B has the greater overall coverage in the report's interpretation, the final decision favours Plan A.</p></div></div>
+<div class="recommend"><p><strong>Final decision: Plan A.</strong> The report gives three reasons:</p><ol><li>It covered various areas around the city, not just centralised CCTV coverage.</li><li>Its focus on Low Priority Areas was intended to help prevent the spill of crime into those areas.</li><li>Even where CCTV coverage already exists around the city centre, higher crime rates were still experienced in those regions compared with outer regions. The report therefore argues for preventing the spread of more crime to Low and Least Priority areas rather than adding more cameras to already-covered areas.</li></ol></div>
+</div></section>
+
+<section class="section"><div class="wrap"><div class="section-head"><div class="section-no">09 / CONSERVATION</div><div><h2>Conservation-area considerations</h2><p class="lead">The report notes that some proposed cameras in both alternatives were sited within a few conservation areas, while existing cameras were also located within or at the edges of some conservation areas. It emphasises due caution in planning activities affecting these designated areas.</p></div></div>
+<div class="panel"><p>The source describes a UK conservation area as an area designated by a local planning authority for special architectural or historic interest, whose character or appearance is desirable to preserve or enhance, citing the Planning (Listed Buildings and Conservation Areas) Act 1990, section 69.</p></div>
+</div></section>
+
+<section class="section" id="workflow"><div class="wrap"><div class="section-head"><div class="section-no">10 / TECHNICAL WORKFLOW</div><div><h2>Reproducible QGIS sequence</h2><p class="lead">This workflow follows the operations documented in the report. It does not add unreported parameters, coordinate systems, classification breaks or processing settings.</p></div></div>
+<div class="panel"><h3>Project setup</h3><ol><li>Open QGIS and create a project for the Sheffield security planning analysis.</li><li>Load the Sheffield LSOA 2021 polygons, Sheffield boundary, September 2023 crime points, crime-count CSV, conservation area polygons, existing CCTV points, and Plan A and Plan B installation layers.</li><li>Confirm that the LSOA code field <code>lsoa21cd</code> is available in the LSOA and intersected data.</li></ol></div>
+<div class="panel" style="margin-top:12px"><h3>Crime aggregation and mapping</h3><ol><li>Use <b>Select by Location</b> to identify crime points within each LSOA and create the crime-count layer, as described in the project detail.</li><li>The methodology summary also records aggregation using <b>Join Attributes by Location</b>; retain this distinction when documenting the original process.</li><li>Generate a choropleth map of total crime incidents per LSOA.</li><li>Use <b>Select by Expression</b> or attribute selection to identify LSOAs with crime count greater than or equal to 30.</li></ol></div>
+<div class="panel" style="margin-top:12px"><h3>Existing CCTV service-area analysis</h3><ol><li>Run a <b>2 km Buffer</b> on existing CCTV point locations.</li><li>Dissolve the individual buffers into one coverage geometry.</li><li>Run <b>Intersect</b> between the dissolved coverage and the LSOA polygons.</li><li>In the intersected attribute table, calculate the LSOA area, covered area in hectares and percentage covered. The report names the fields <code>Area_Ha</code>, <code>Covered_Ha</code> and <code>%covered</code>.</li><li>Run <b>Join Attributes by Field Value</b> to join the intersected layer to the original LSOA layer using <code>lsoa21cd</code>, preserving LSOAs with no CCTV-buffer intersection.</li></ol></div>
+<div class="panel" style="margin-top:12px"><h3>Priority classification and alternatives</h3><ol><li>Apply the exact CASE expression reproduced above using the crime-count and percentage-covered fields.</li><li>Summarise the number and area of LSOAs in each of the five priority classes.</li><li>Assess Plan A using the proposed 10 new cameras and their 2 km coverage range.</li><li>Assess Plan B using a 3 km buffer for the 10 existing cameras proposed for upgrade.</li><li>Compare each alternative's covered area and percentage across the priority categories and overall.</li><li>Overlay or visually compare camera locations and conservation area polygons, then record the planning considerations.</li></ol></div>
+<div class="note">The PDF does not specify the QGIS version, CRS, exact choropleth classification method or class breaks, field-calculator formulas, buffer segment settings, or exact Plan A/Plan B processing sequence beyond the operations described. These have intentionally not been invented.</div>
+<p style="margin-top:20px"><a class="pill" href="technical-workflow.md" download>Download technical workflow (Markdown)</a> <a class="pill" href="README.md">Repository README</a></p>
+</div></section>
+
+<section class="section"><div class="wrap"><div class="section-head"><div class="section-no">11 / MAP GALLERY</div><div><h2>Original project figures</h2><p class="lead">The following are page images rendered directly from the supplied PDF. Their cartographic content has not been redrawn or edited.</p></div></div>
+<div class="gallery">
+<figure class="figure"><img loading="lazy" src="assets/source-page-05.png" alt="Original Sheffield CCTV locations map"><figcaption>Source PDF · Page 54 — Sheffield CCTV locations</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-06.png" alt="Original Sheffield crime points map"><figcaption>Source PDF · Page 55 — Sheffield crime points</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-07.png" alt="Original Sheffield conservation areas map"><figcaption>Source PDF · Page 56 — Conservation areas</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-08.png" alt="Original Sheffield LSOA map"><figcaption>Source PDF · Page 57 — Lower Super Output Areas</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-09.png" alt="Original Plan A map"><figcaption>Source PDF · Page 58 — Alternative A</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-10.png" alt="Original Plan B map"><figcaption>Source PDF · Page 59 — Alternative B</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-12.png" alt="Original crime choropleth map"><figcaption>Source PDF · Page 60 — Crime choropleth</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-13.png" alt="Original high crime LSOA map"><figcaption>Source PDF · Page 61 — LSOAs with ≥30 crimes</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-14.png" alt="Original CCTV buffer map"><figcaption>Source PDF · Page 62 — CCTV points and general coverage</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-15.png" alt="Original CCTV service areas map"><figcaption>Source PDF · Page 63 — CCTV service areas</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-17.png" alt="Original uncovered LSOA map"><figcaption>Source PDF · Page 65 — LSOAs not touched by CCTV coverage</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-19.png" alt="Original priority areas map"><figcaption>Source PDF · Page 67 — Priority areas</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-21.png" alt="Original Plan A priority coverage map"><figcaption>Source PDF · Page 69 — Plan A and priority areas</figcaption></figure>
+<figure class="figure"><img loading="lazy" src="assets/source-page-23.png" alt="Original Plan B priority coverage map"><figcaption>Source PDF · Page 71 — Plan B and priority areas</figcaption></figure>
+</div>
+</div></section>
+</main>
+<footer><div class="wrap foot"><span>Sheffield Security Planning · GIS Case Study</span><span>Source: Sheffield_project.pdf · Project figures and wording retained as supplied</span></div></footer>
+</body></html>
